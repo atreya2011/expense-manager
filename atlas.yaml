@@ -1,0 +1,11 @@
+version: 2
+sql:
+  dialect: sqlite
+  schema: db/schema.sql
+  dir: db/migrations
+  format:
+    migrate:
+      # Use .sql extension for migration files
+      extension: sql
+      # Format: 01_name.sql
+      format: "%d_%s.sql"

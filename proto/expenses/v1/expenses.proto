@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package expenses.v1;
+
+option go_package = "github.com/atreya2011/expense-manager/internal/rpc/gen/expenses/v1;expensesv1";
+
+import "api/proto/expenses/v1/common.proto";
+import "google/protobuf/timestamp.proto";
+
+// ExpenseService is the main service for expense management
+service ExpenseService {
+  // Initial placeholder for service methods
+  // Methods will be added in subsequent phases
+}
+
+// AccountType represents the type of account (Asset, Liability, Equity)
+message AccountType {
+  string id   = 1;
+  string name = 2;
+  string code = 3;  // A=Asset, L=Liability, E=Equity
+}
+
+// Account represents a financial account
+message Account {
+  string                    id              = 1;
+  string                    name            = 2;
+  string                    description     = 3;
+  string                    account_type_id = 4;
+  optional string           instrument_id   = 5;
+  optional string           institution_id  = 6;
+  optional string           currency_id     = 7;
+  google.protobuf.Timestamp created_at      = 8;
+  google.protobuf.Timestamp updated_at      = 9;
+}
+
+// Transaction represents a financial transaction
+message Transaction {
+  string                    id             = 1;
+  google.protobuf.Timestamp date           = 2;
+  string                    description    = 3;
+  string                    notes          = 4;
+  optional string           category_id    = 5;
+  optional string           instrument_id  = 6;
+  optional string           allocation_tag = 7;
+  google.protobuf.Timestamp created_at     = 8;
+  google.protobuf.Timestamp updated_at     = 9;
+}
+
+// LedgerEntry represents an entry in the ledger
+message LedgerEntry {
+  string                    id             = 1;
+  string                    transaction_id = 2;
+  string                    account_id     = 3;
+  optional string           category_id    = 4;
+  string                    memo           = 5;
+  Money                     debit          = 6;
+  Money                     credit         = 7;
+  string                    currency_id    = 8;
+  google.protobuf.Timestamp created_at     = 9;
+  google.protobuf.Timestamp updated_at     = 10;
+}

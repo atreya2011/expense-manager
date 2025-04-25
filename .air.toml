@@ -1,0 +1,29 @@
+root = "."
+testdata_dir = "testdata"
+tmp_dir = "tmp"
+
+[build]
+bin = "./tmp/server serve"
+cmd = "go build -o ./tmp/server main.go"
+delay = 1000
+exclude_dir = [
+  "tmp",
+  "bin",
+  "vendor",
+]
+exclude_file = []
+include_ext = ["go", "proto", "sql", "yaml", "env"]
+log = "air.log"
+stop_on_error = true
+
+[log]
+time = true
+
+[color]
+build = "yellow"
+main = "magenta"
+runner = "green"
+watcher = "cyan"
+
+[misc]
+clean_on_exit = true

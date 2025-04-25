@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package expenses.v1;
+
+option go_package = "github.com/atreya2011/expense-manager/internal/rpc/gen/expenses/v1;expensesv1";
+
+import "google/protobuf/timestamp.proto";
+
+// UUID represents a UUID value
+message UUID {
+  string value = 1;
+}
+
+// Money represents a monetary value with currency
+message Money {
+  int64  amount   = 1;  // Amount in smallest currency unit (e.g., cents)
+  string currency = 2;  // Currency code (e.g., JPY)
+}
+
+// Pagination represents pagination parameters
+message Pagination {
+  int32  page_size  = 1;
+  string page_token = 2;
+}
+
+// PaginationResponse represents pagination response
+message PaginationResponse {
+  string next_page_token = 1;
+  int32  total_count     = 2;
+}
