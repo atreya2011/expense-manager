@@ -24,7 +24,7 @@ type DatabaseConfig struct {
 	Path string `env:"DATABASE_PATH" envDefault:"db/expenses.db"`
 }
 
-// LoadConfig loads configuration from environment variables and .env file
+// Load loads configuration from environment variables and .env file
 func Load() (*Config, error) {
 	// Load .env file if it exists
 	if err := godotenv.Load(); err != nil {
