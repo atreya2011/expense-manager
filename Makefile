@@ -1,4 +1,4 @@
-.PHONY: help proto sqlc migrate-up migrate-down test test-integration build run clean migrate-status migrate-new
+.PHONY: help proto sqlc migrate-up migrate-down test test-integration build run clean migrate-status migrate-new lint
 
 DB_PATH=db/expenses.db
 MIGRATIONS_DIR=./db/migrations
@@ -64,6 +64,11 @@ setup-tools:
 	go install ariga.io/atlas/cmd/atlas@latest
 	go install github.com/kyoh86/richgo@latest
 	go install github.com/air-verse/air@latest
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+
+lint: ## Run golangci-lint on the project
+	@echo "Running linter..."
+	golangci-lint run
 
 generate-all: proto sqlc ## Generate all code (protobuf, connect, sqlc)
 

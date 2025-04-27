@@ -1,0 +1,26 @@
+# See https://golangci-lint.run/usage/configuration/ for config details
+version: "2"
+
+run:
+  timeout: 2m
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - revive
+    - sloglint
+    - whitespace
+  settings:
+    revive:
+      rules:
+        - name: "package-comments"
+          disabled: true
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
