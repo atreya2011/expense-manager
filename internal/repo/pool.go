@@ -5,12 +5,24 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // Import SQLite driver
 )
 
 // OpenDB creates a new database connection pool
 func OpenDB(path string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", path+"?_busy_timeout=5000")
+	connStr := path
+	
+	// Add query parameters if not an in-memory database
+	// For in-memory databases, the path will be ":memory:"
+	if path != ":memory:" {
+		connStr += "?_busy_timeout=5000"
+	} else {
+		// For in-memory database, we need to ensure it stays alive
+		// by maintaining an open connection
+		connStr = "file::memory:?cache=shared&_busy_timeout=5000"
+	}
+	
+	db, err := sql.Open("sqlite3", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %w", err)
 	}
@@ -22,7 +34,9 @@ func OpenDB(path string) (*sql.DB, error) {
 
 	// Test the connection
 	if err := db.Ping(); err != nil {
-		db.Close()
+		if err := db.Close(); err != nil {
+			return nil, fmt.Errorf("error closing database: %w", err)
+		}
 		return nil, fmt.Errorf("error connecting to database: %w", err)
 	}
 

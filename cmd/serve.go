@@ -11,8 +11,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/atreya2011/expense-manager/internal/clock"
 	"github.com/atreya2011/expense-manager/internal/config"
 	"github.com/atreya2011/expense-manager/internal/log"
+	"github.com/atreya2011/expense-manager/internal/repo"
+	"github.com/atreya2011/expense-manager/internal/rpc/gen/expenses/v1/expensesv1connect"
+	"github.com/atreya2011/expense-manager/internal/rpc/services"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/http2"
@@ -52,7 +56,6 @@ func runServeCmd(cmd *cobra.Command, args []string) error {
 		logger.Error("Failed to connect to database", "error", err)
 		return err
 	}
-	defer db.Close()
 
 	// Test database connection
 	if err := db.Ping(); err != nil {
@@ -75,20 +78,25 @@ func runServeCmd(cmd *cobra.Command, args []string) error {
 	}
 	logger.Info("Database schema verified")
 
-	// TODO: Initialize repositories
+	// Initialize repositories
+	userRepo := repo.NewUserRepo(db)
+	logger.Info("User repository initialized")
 
-	// TODO: Initialize clock
+	// Initialize clock
+	clk := clock.NewRealClock()
+	logger.Info("Clock initialized")
 
-	// TODO: Initialize auth interceptor
-
-	// TODO: Create interceptors
-
-	// TODO: Initialize Connect RPC services
+	// Initialize Connect RPC services
+	userService := services.NewUserService(userRepo, clk)
+	logger.Info("User service initialized")
 
 	// Create router
 	mux := http.NewServeMux()
 
 	// Register Connect RPC services
+	userPath, userHandler := expensesv1connect.NewUserServiceHandler(userService)
+	mux.Handle(userPath, userHandler)
+	logger.Info("User service registered", "path", userPath)
 
 	// Configure server
 	addr := fmt.Sprintf(":%s", cfg.Server.Port)
@@ -120,6 +128,11 @@ func runServeCmd(cmd *cobra.Command, args []string) error {
 	// Create shutdown context with timeout
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
+
+	// Close database connection
+	if err := db.Close(); err != nil {
+		logger.Error("Failed to close database connection", "error", err)
+	}
 
 	// Shutdown server
 	if err := server.Shutdown(shutdownCtx); err != nil {
