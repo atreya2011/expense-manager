@@ -21,6 +21,16 @@ tmp/
 # Environment
 .env
 
+# Generated code
+/internal/repo/gen/
+/internal/rpc/gen/
+/frontend/gen/
+
+memory-bank/
+.clinerules
+
+expense-manager
+
 # IDE
 .idea/
 .vscode/
