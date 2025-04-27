@@ -14,6 +14,8 @@ sqlc: ## Generate Go code from SQL queries using sqlc
 	@echo "Generating sqlc code..."
 	sqlc generate
 
+generate-all: proto sqlc ## Generate all code (protobuf, connect, sqlc)
+
 migrate-up: ## Apply all database migrations
 	@echo "Applying migrations..."
 	atlas migrate apply --url "sqlite://$(DB_PATH)" --dir "file://$(MIGRATIONS_DIR)"
