@@ -4,8 +4,6 @@ package expenses.v1;
 
 option go_package = "github.com/atreya2011/expense-manager/internal/rpc/gen/expenses/v1;expensesv1";
 
-import "google/protobuf/timestamp.proto";
-
 // UUID represents a UUID value
 message UUID {
   string value = 1;

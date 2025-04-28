@@ -5,7 +5,6 @@ package expenses.v1;
 option go_package = "github.com/atreya2011/expense-manager/internal/rpc/gen/expenses/v1;expensesv1";
 
 import "expenses/v1/common.proto";
-import "expenses/v1/user.proto";
 import "google/protobuf/timestamp.proto";
 
 // ExpenseService is the main service for expense management
