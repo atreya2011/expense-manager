@@ -29,9 +29,7 @@ jobs:
         run: make generate-all
 
       - name: Run migrations
-        run: |
-          mkdir -p db
-          atlas migrate apply --url "sqlite://db/expenses.db" --dir "file://db/migrations"
+        run: make migrate
 
       - name: Install Buf
         uses: bufbuild/buf-setup-action@v1
