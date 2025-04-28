@@ -11,7 +11,7 @@ import (
 // OpenDB creates a new database connection pool
 func OpenDB(path string) (*sql.DB, error) {
 	connStr := path
-	
+
 	// Add query parameters if not an in-memory database
 	// For in-memory databases, the path will be ":memory:"
 	if path != ":memory:" {
@@ -21,7 +21,7 @@ func OpenDB(path string) (*sql.DB, error) {
 		// by maintaining an open connection
 		connStr = "file::memory:?cache=shared&_busy_timeout=5000"
 	}
-	
+
 	db, err := sql.Open("sqlite3", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %w", err)

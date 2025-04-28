@@ -1,7 +1,7 @@
 .PHONY: help proto sqlc migrate-up migrate-down test test-integration build run clean migrate-status migrate-new lint
 
 DB_PATH=db/expenses.db
-MIGRATIONS_DIR=./db/migrations
+MIGRATIONS_DIR=db/migrations
 
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -16,13 +16,9 @@ sqlc: ## Generate Go code from SQL queries using sqlc
 
 generate-all: proto sqlc ## Generate all code (protobuf, connect, sqlc)
 
-migrate-up: ## Apply all database migrations
+migrate: ## Apply all database migrations
 	@echo "Applying migrations..."
 	atlas migrate apply --url "sqlite://$(DB_PATH)" --dir "file://$(MIGRATIONS_DIR)"
-
-migrate-down: ## Revert the last database migration
-	@echo "Reverting last migration..."
-	atlas migrate down --url "sqlite://$(DB_PATH)" --dir "file://$(MIGRATIONS_DIR)" 1
 
 migrate-status: ## Check migration status
 	@echo "Checking migration status..."
@@ -30,7 +26,7 @@ migrate-status: ## Check migration status
 
 migrate-new: ## Create a new migration file. Usage: make migrate-new name=migration_name
 	@echo "Creating new migration..."
-	atlas migrate new $(name) --dir "$(MIGRATIONS_DIR)"
+	atlas migrate diff $(name) --dir "file://$(MIGRATIONS_DIR)" --to "file://db/schema.sql" --dev-url "sqlite://file?mode=memory"
 
 test: ## Run tests with real database
 	@echo "Running tests..."
@@ -71,11 +67,3 @@ setup-tools:
 lint: ## Run golangci-lint on the project
 	@echo "Running linter..."
 	golangci-lint run
-
-generate-all: proto sqlc ## Generate all code (protobuf, connect, sqlc)
-
-init-db: ## Initialize DB: Create database file & run migrations
-	@echo "Ensuring database directory exists..."
-	mkdir -p $(dir $(DB_PATH))
-	@echo "Applying migrations..."
-	$(MAKE) migrate-up

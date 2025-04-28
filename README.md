@@ -28,7 +28,7 @@ make generate
 3. Run migrations:
 
 ```bash
-make migrate-up
+make migrate
 ```
 
 4. Run the server:
@@ -39,7 +39,6 @@ make air
 
 ## Project Structure
 
-- `api/proto/`: Protocol buffer definitions
 - `cmd/`: Command-line interface code
 - `db/`: Database migrations and queries
 - `internal/`: Internal packages
@@ -49,3 +48,38 @@ make air
   - `log/`: Logging utilities
   - `repo/`: Database repositories
   - `rpc/`: RPC services
+- `proto/`: Protocol buffer definitions
+
+## Database Migrations with Atlas
+
+This project uses [Atlas](https://atlasgo.io/) for managing database migrations.
+
+### Migration Commands
+
+The following commands are available for working with migrations:
+
+```bash
+# Apply all pending migrations
+make migrate-up
+
+# Revert the last migration
+make migrate-down
+
+# Check migration status
+make migrate-status
+
+# Create a new migration file
+make migrate-new name=your_migration_name
+```
+
+### Migration Files
+
+Migration files are stored in the `db/migrations` directory and follow the format `YYYYMMDDhhmmss_name.sql`.
+
+### Migration Strategy
+
+Atlas handles the complete migration lifecycle:
+
+1. Tracks applied migrations in a schema_migrations table
+2. Provides status checking to identify pending migrations
+3. Supports both versioned migrations and declarative schema management
