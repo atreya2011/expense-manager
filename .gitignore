@@ -27,12 +27,6 @@ tmp/
 /internal/rpc/gen/
 /frontend/gen/
 
-# LLM
-# This is a temporary workaround for the LLM code generation
-# and should be removed once the code is stable.
-memory-bank/
-.clinerules
-
 # Frontend
 node_modules
 .DS_Store
