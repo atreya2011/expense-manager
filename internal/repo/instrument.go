@@ -3,16 +3,11 @@ package repo
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/atreya2011/expense-manager/internal/errors"
 	db "github.com/atreya2011/expense-manager/internal/repo/gen"
-)
-
-var (
-	// ErrDuplicate is returned when a duplicate entry is detected
-	ErrDuplicate = errors.New("duplicate entry")
 )
 
 // InstrumentRepo provides direct access to instrument-related database operations
@@ -32,7 +27,7 @@ func (r *InstrumentRepo) CreateInstrument(ctx context.Context, name string) (db.
 	instrument, err := r.q.CreateInstrument(ctx, name)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-			return db.Instrument{}, fmt.Errorf("instrument with this name already exists: %w", ErrDuplicate)
+			return db.Instrument{}, fmt.Errorf("instrument with this name already exists: %w", errors.ErrDuplicate)
 		}
 		return db.Instrument{}, fmt.Errorf("failed to create instrument: %w", err)
 	}
@@ -44,7 +39,7 @@ func (r *InstrumentRepo) GetInstrument(ctx context.Context, id string) (db.Instr
 	instrument, err := r.q.GetInstrument(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return db.Instrument{}, fmt.Errorf("instrument not found: %w", ErrNotFound)
+			return db.Instrument{}, fmt.Errorf("instrument not found: %w", errors.ErrNotFound)
 		}
 		return db.Instrument{}, fmt.Errorf("failed to get instrument: %w", err)
 	}
@@ -71,10 +66,10 @@ func (r *InstrumentRepo) UpdateInstrument(ctx context.Context, id, name string) 
 	})
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return db.Instrument{}, fmt.Errorf("instrument not found: %w", ErrNotFound)
+			return db.Instrument{}, fmt.Errorf("instrument not found: %w", errors.ErrNotFound)
 		}
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-			return db.Instrument{}, fmt.Errorf("instrument with this name already exists: %w", ErrDuplicate)
+			return db.Instrument{}, fmt.Errorf("instrument with this name already exists: %w", errors.ErrDuplicate)
 		}
 		return db.Instrument{}, fmt.Errorf("failed to update instrument: %w", err)
 	}
@@ -86,7 +81,7 @@ func (r *InstrumentRepo) DeleteInstrument(ctx context.Context, id string) error 
 	err := r.q.DeleteInstrument(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fmt.Errorf("instrument not found: %w", ErrNotFound)
+			return fmt.Errorf("instrument not found: %w", errors.ErrNotFound)
 		}
 		return fmt.Errorf("failed to delete instrument: %w", err)
 	}

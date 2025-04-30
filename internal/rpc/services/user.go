@@ -2,26 +2,18 @@ package services
 
 import (
 	"context"
-	"errors"
+	stderrors "errors"
 	"fmt"
 
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/atreya2011/expense-manager/internal/clock"
+	"github.com/atreya2011/expense-manager/internal/errors"
 	"github.com/atreya2011/expense-manager/internal/repo"
 	db "github.com/atreya2011/expense-manager/internal/repo/gen"
 	expensesv1 "github.com/atreya2011/expense-manager/internal/rpc/gen/expenses/v1"
 	"github.com/atreya2011/expense-manager/internal/rpc/gen/expenses/v1/expensesv1connect"
-)
-
-var (
-	// ErrInvalidInput is returned when the request contains invalid data
-	ErrInvalidInput = errors.New("invalid input")
-	// ErrNotFound is returned when a requested resource is not found
-	ErrNotFound = errors.New("not found")
-	// ErrInternal is returned when an internal error occurs
-	ErrInternal = errors.New("internal error")
 )
 
 // UserService implements the UserService interface defined in the proto
@@ -43,7 +35,7 @@ func NewUserService(repo *repo.UserRepo, clock clock.Clock) *UserService {
 func (s *UserService) CreateUser(ctx context.Context, req *connect.Request[expensesv1.CreateUserRequest]) (*connect.Response[expensesv1.CreateUserResponse], error) {
 	// Validate input
 	if req.Msg.Name == "" || req.Msg.Email == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: name and email are required", ErrInvalidInput))
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: name and email are required", errors.ErrInvalidInput))
 	}
 
 	// Create user in database
@@ -52,7 +44,7 @@ func (s *UserService) CreateUser(ctx context.Context, req *connect.Request[expen
 		Email: req.Msg.Email,
 	})
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", ErrInternal, err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response
@@ -65,16 +57,16 @@ func (s *UserService) CreateUser(ctx context.Context, req *connect.Request[expen
 func (s *UserService) GetUser(ctx context.Context, req *connect.Request[expensesv1.GetUserRequest]) (*connect.Response[expensesv1.GetUserResponse], error) {
 	// Validate input
 	if req.Msg.Id == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", ErrInvalidInput))
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", errors.ErrInvalidInput))
 	}
 
 	// Get user from database
 	user, err := s.repo.GetUser(ctx, req.Msg.Id)
 	if err != nil {
-		if errors.Is(err, repo.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", ErrNotFound, req.Msg.Id))
+		if stderrors.Is(err, errors.ErrNotFound) {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", errors.ErrNotFound, req.Msg.Id))
 		}
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", ErrInternal, err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response
@@ -97,7 +89,7 @@ func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[expens
 			// In a real implementation, we would decode the page token to get the offset
 			// For simplicity, we'll just parse it as an offset
 			if _, err := fmt.Sscanf(req.Msg.Pagination.PageToken, "%d", &offset); err != nil {
-				return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: invalid page token", ErrInvalidInput))
+				return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: invalid page token", errors.ErrInvalidInput))
 			}
 		}
 	}
@@ -108,7 +100,7 @@ func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[expens
 		Offset: offset,
 	})
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", ErrInternal, err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response
@@ -136,19 +128,19 @@ func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[expens
 func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expensesv1.UpdateUserRequest]) (*connect.Response[expensesv1.UpdateUserResponse], error) {
 	// Validate input
 	if req.Msg.Id == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", ErrInvalidInput))
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", errors.ErrInvalidInput))
 	}
 	if req.Msg.Name == "" || req.Msg.Email == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: name and email are required", ErrInvalidInput))
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: name and email are required", errors.ErrInvalidInput))
 	}
 
 	// Check if user exists
 	_, err := s.repo.GetUser(ctx, req.Msg.Id)
 	if err != nil {
-		if errors.Is(err, repo.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", ErrNotFound, req.Msg.Id))
+		if stderrors.Is(err, errors.ErrNotFound) {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", errors.ErrNotFound, req.Msg.Id))
 		}
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", ErrInternal, err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
 	// Update user in database
@@ -158,7 +150,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expen
 		Email: req.Msg.Email,
 	})
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", ErrInternal, err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response
@@ -171,22 +163,22 @@ func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expen
 func (s *UserService) DeleteUser(ctx context.Context, req *connect.Request[expensesv1.DeleteUserRequest]) (*connect.Response[expensesv1.DeleteUserResponse], error) {
 	// Validate input
 	if req.Msg.Id == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", ErrInvalidInput))
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", errors.ErrInvalidInput))
 	}
 
 	// Check if user exists
 	_, err := s.repo.GetUser(ctx, req.Msg.Id)
 	if err != nil {
-		if errors.Is(err, repo.ErrNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", ErrNotFound, req.Msg.Id))
+		if stderrors.Is(err, errors.ErrNotFound) {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", errors.ErrNotFound, req.Msg.Id))
 		}
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", ErrInternal, err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
 	// Delete user from database
 	err = s.repo.DeleteUser(ctx, req.Msg.Id)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", ErrInternal, err))
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response

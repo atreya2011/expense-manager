@@ -3,15 +3,10 @@ package repo
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 
+	"github.com/atreya2011/expense-manager/internal/errors"
 	db "github.com/atreya2011/expense-manager/internal/repo/gen"
-)
-
-var (
-	// ErrNotFound is returned when a requested resource is not found
-	ErrNotFound = errors.New("not found")
 )
 
 // UserRepo provides direct access to user-related database operations
@@ -40,7 +35,7 @@ func (r *UserRepo) GetUser(ctx context.Context, id string) (db.User, error) {
 	user, err := r.q.GetUser(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return db.User{}, fmt.Errorf("user not found: %w", ErrNotFound)
+			return db.User{}, fmt.Errorf("user not found: %w", errors.ErrNotFound)
 		}
 		return db.User{}, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -61,7 +56,7 @@ func (r *UserRepo) UpdateUser(ctx context.Context, arg db.UpdateUserParams) (db.
 	user, err := r.q.UpdateUser(ctx, arg)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return db.User{}, fmt.Errorf("user not found: %w", ErrNotFound)
+			return db.User{}, fmt.Errorf("user not found: %w", errors.ErrNotFound)
 		}
 		return db.User{}, fmt.Errorf("failed to update user: %w", err)
 	}
@@ -73,7 +68,7 @@ func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
 	err := r.q.DeleteUser(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fmt.Errorf("user not found: %w", ErrNotFound)
+			return fmt.Errorf("user not found: %w", errors.ErrNotFound)
 		}
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
