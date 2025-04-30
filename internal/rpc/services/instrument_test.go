@@ -96,27 +96,27 @@ func TestGetInstrument(t *testing.T) {
 
 	// Define test cases
 	tests := []struct {
-		name          string
-		instrumentID  string
-		expectError   bool
-		errorMsg      string
+		name         string
+		instrumentID string
+		expectError  bool
+		errorMsg     string
 	}{
 		{
-			name:          "Valid instrument retrieval",
-			instrumentID:  testInstrument.ID,
-			expectError:   false,
+			name:         "Valid instrument retrieval",
+			instrumentID: testInstrument.ID,
+			expectError:  false,
 		},
 		{
-			name:          "Non-existent instrument",
-			instrumentID:  "ins_nonexistent",
-			expectError:   true,
-			errorMsg:      "not found",
+			name:         "Non-existent instrument",
+			instrumentID: "ins_nonexistent",
+			expectError:  true,
+			errorMsg:     "not found",
 		},
 		{
-			name:          "Empty instrument ID",
-			instrumentID:  "",
-			expectError:   true,
-			errorMsg:      "id is required",
+			name:         "Empty instrument ID",
+			instrumentID: "",
+			expectError:  true,
+			errorMsg:     "id is required",
 		},
 	}
 
@@ -166,35 +166,35 @@ func TestListInstruments(t *testing.T) {
 
 	// Define test cases
 	tests := []struct {
-		name          string
-		pageSize      int32
-		pageToken     string
-		expectedN     int
-		expectError   bool
+		name        string
+		pageSize    int32
+		pageToken   string
+		expectedN   int
+		expectError bool
 	}{
 		{
-			name:          "List all instruments (default page size)",
-			pageSize:      0, // Default
-			pageToken:     "",
-			expectedN:     3,
+			name:      "List all instruments (default page size)",
+			pageSize:  0, // Default
+			pageToken: "",
+			expectedN: 3,
 		},
 		{
-			name:          "List with pagination (page 1)",
-			pageSize:      2,
-			pageToken:     "",
-			expectedN:     2,
+			name:      "List with pagination (page 1)",
+			pageSize:  2,
+			pageToken: "",
+			expectedN: 2,
 		},
 		{
-			name:          "List with pagination (page 2)",
-			pageSize:      2,
-			pageToken:     "2", // Start from offset 2
-			expectedN:     1,   // Only 1 instrument left
+			name:      "List with pagination (page 2)",
+			pageSize:  2,
+			pageToken: "2", // Start from offset 2
+			expectedN: 1,   // Only 1 instrument left
 		},
 		{
-			name:          "Empty result",
-			pageSize:      2,
-			pageToken:     "10", // Start from offset 10 (beyond available data)
-			expectedN:     0,
+			name:      "Empty result",
+			pageSize:  2,
+			pageToken: "10", // Start from offset 10 (beyond available data)
+			expectedN: 0,
 		},
 	}
 
@@ -346,27 +346,27 @@ func TestDeleteInstrument(t *testing.T) {
 
 	// Define test cases
 	tests := []struct {
-		name        string
+		name         string
 		instrumentID string
-		expectError bool
-		errorMsg    string
+		expectError  bool
+		errorMsg     string
 	}{
 		{
-			name:        "Valid instrument deletion",
+			name:         "Valid instrument deletion",
 			instrumentID: testInstrument.ID,
-			expectError: false,
+			expectError:  false,
 		},
 		{
-			name:        "Non-existent instrument",
+			name:         "Non-existent instrument",
 			instrumentID: "ins_nonexistent",
-			expectError: true,
-			errorMsg:    "not found",
+			expectError:  true,
+			errorMsg:     "not found",
 		},
 		{
-			name:        "Empty instrument ID",
+			name:         "Empty instrument ID",
 			instrumentID: "",
-			expectError: true,
-			errorMsg:    "id is required",
+			expectError:  true,
+			errorMsg:     "id is required",
 		},
 	}
 
