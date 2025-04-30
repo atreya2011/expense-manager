@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package expenses.v1;
+
+option go_package = "github.com/atreya2011/expense-manager/internal/rpc/gen/expenses/v1;expensesv1";
+
+import "expenses/v1/common.proto";
+import "google/protobuf/timestamp.proto";
+
+// Instrument represents a financial instrument (Cash, Bank Account, Credit
+// Card, etc.)
+message Instrument {
+  string                    id         = 1;
+  string                    name       = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+}
+
+// CreateInstrumentRequest represents a request to create an instrument
+message CreateInstrumentRequest {
+  string name = 1;
+}
+
+// CreateInstrumentResponse represents the response to a create instrument
+// request
+message CreateInstrumentResponse {
+  Instrument instrument = 1;
+}
+
+// GetInstrumentRequest represents a request to get an instrument by ID
+message GetInstrumentRequest {
+  string id = 1;
+}
+
+// GetInstrumentResponse represents the response to a get instrument request
+message GetInstrumentResponse {
+  Instrument instrument = 1;
+}
+
+// ListInstrumentsRequest represents a request to list instruments with optional
+// pagination
+message ListInstrumentsRequest {
+  Pagination pagination = 1;
+}
+
+// ListInstrumentsResponse represents the response to a list instruments request
+message ListInstrumentsResponse {
+  repeated Instrument instruments         = 1;
+  PaginationResponse  pagination_response = 2;
+}
+
+// UpdateInstrumentRequest represents a request to update an instrument
+message UpdateInstrumentRequest {
+  string id   = 1;
+  string name = 2;
+}
+
+// UpdateInstrumentResponse represents the response to an update instrument
+// request
+message UpdateInstrumentResponse {
+  Instrument instrument = 1;
+}
+
+// DeleteInstrumentRequest represents a request to delete an instrument by ID
+message DeleteInstrumentRequest {
+  string id = 1;
+}
+
+// DeleteInstrumentResponse represents the response to a delete instrument
+// request
+message DeleteInstrumentResponse {
+  bool success = 1;
+}
+
+// InstrumentService provides operations for instruments
+service InstrumentService {
+  // CreateInstrument creates a new instrument
+  rpc CreateInstrument(CreateInstrumentRequest)
+      returns (CreateInstrumentResponse) {}
+
+  // GetInstrument retrieves an instrument by ID
+  rpc GetInstrument(GetInstrumentRequest) returns (GetInstrumentResponse) {}
+
+  // ListInstruments retrieves a list of instruments with optional pagination
+  rpc ListInstruments(ListInstrumentsRequest)
+      returns (ListInstrumentsResponse) {}
+
+  // UpdateInstrument updates an existing instrument
+  rpc UpdateInstrument(UpdateInstrumentRequest)
+      returns (UpdateInstrumentResponse) {}
+
+  // DeleteInstrument deletes an instrument by ID
+  rpc DeleteInstrument(DeleteInstrumentRequest)
+      returns (DeleteInstrumentResponse) {}
+}

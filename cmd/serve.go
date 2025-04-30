@@ -66,14 +66,15 @@ func runServeCmd(cmd *cobra.Command, args []string) error {
 	}
 	if count == 0 {
 		logger.Error("Database schema is incorrect. Make sure migrations have been applied.", "error", "account_types table not found")
-		logger.Info("Run 'make migrate-up' to apply Atlas migrations")
+		logger.Info("Run 'make migrate' to apply Atlas migrations")
 		return fmt.Errorf("account_types table not found")
 	}
 	logger.Info("Database schema verified")
 
 	// Initialize repositories
 	userRepo := repo.NewUserRepo(db)
-	logger.Info("User repository initialized")
+	instrumentRepo := repo.NewInstrumentRepo(db)
+	logger.Info("Repositories initialized")
 
 	// Initialize clock
 	clk := clock.NewRealClock()
@@ -81,7 +82,8 @@ func runServeCmd(cmd *cobra.Command, args []string) error {
 
 	// Initialize Connect RPC services
 	userService := services.NewUserService(userRepo, clk)
-	logger.Info("User service initialized")
+	instrumentService := services.NewInstrumentService(instrumentRepo, clk)
+	logger.Info("Services initialized")
 
 	// Create router
 	mux := http.NewServeMux()
@@ -90,6 +92,10 @@ func runServeCmd(cmd *cobra.Command, args []string) error {
 	userPath, userHandler := expensesv1connect.NewUserServiceHandler(userService)
 	mux.Handle(userPath, userHandler)
 	logger.Info("User service registered", "path", userPath)
+
+	instrumentPath, instrumentHandler := expensesv1connect.NewInstrumentServiceHandler(instrumentService)
+	mux.Handle(instrumentPath, instrumentHandler)
+	logger.Info("Instrument service registered", "path", instrumentPath)
 
 	// Configure server
 	addr := fmt.Sprintf(":%s", cfg.Server.Port)

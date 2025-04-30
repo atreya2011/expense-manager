@@ -22,8 +22,9 @@ var (
 	// Global test database connection
 	testDB *sql.DB
 
-	// Global user repository for tests
-	userRepo *repo.UserRepo
+	// Global repositories for tests
+	userRepo       *repo.UserRepo
+	instrumentRepo *repo.InstrumentRepo
 
 	// Test clock for predictable timestamps
 	testClock clock.Clock
@@ -64,6 +65,7 @@ func setupTestEnvironment() error {
 
 	// Initialize repositories
 	userRepo = repo.NewUserRepo(testDB)
+	instrumentRepo = repo.NewInstrumentRepo(testDB)
 
 	// Initialize test clock
 	testClock = clock.NewMockClock(time.Date(2025, 4, 26, 12, 0, 0, 0, time.UTC))
@@ -94,6 +96,20 @@ func createTestSchema(db *sql.DB) error {
 			UNIQUE (email)
 		)
 	`)
+	if err != nil {
+		return err
+	}
+
+	// Create instruments table
+	_, err = db.Exec(`
+		CREATE TABLE instruments (
+			id TEXT PRIMARY KEY,
+			name TEXT NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE (name)
+		)
+	`)
 	return err
 }
 
@@ -102,7 +118,7 @@ func resetTestDB(t *testing.T) {
 	t.Helper()
 
 	// Delete all data from tables
-	tables := []string{"users"}
+	tables := []string{"users", "instruments"}
 	for _, table := range tables {
 		_, err := testDB.Exec("DELETE FROM " + table)
 		if err != nil {
@@ -131,6 +147,24 @@ func createTestUser(t *testing.T, name, email string) db.User {
 	}
 
 	return user
+}
+
+// createTestInstrument inserts a test instrument into the database
+func createTestInstrument(t *testing.T, name string) db.Instrument {
+	t.Helper()
+
+	var instrument db.Instrument
+
+	ctx := context.Background()
+
+	// Use the repository to create the instrument
+	var err error
+	instrument, err = instrumentRepo.CreateInstrument(ctx, name)
+	if err != nil {
+		t.Fatalf("Failed to create test instrument: %v", err)
+	}
+
+	return instrument
 }
 
 // assertError checks if an error matches the expected condition
