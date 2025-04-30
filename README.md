@@ -34,7 +34,13 @@ make migrate
 4. Run the server:
 
 ```bash
-make air
+make dev
+```
+
+5. Seed Master Data:
+
+```bash
+make seed
 ```
 
 ## Project Structure
@@ -60,15 +66,12 @@ The following commands are available for working with migrations:
 
 ```bash
 # Apply all pending migrations
-make migrate-up
-
-# Revert the last migration
-make migrate-down
+make migrate
 
 # Check migration status
 make migrate-status
 
-# Create a new migration file
+# Create a new migration file based on the current schema
 make migrate-new name=your_migration_name
 ```
 
@@ -82,4 +85,4 @@ Atlas handles the complete migration lifecycle:
 
 1. Tracks applied migrations in a schema_migrations table
 2. Provides status checking to identify pending migrations
-3. Supports both versioned migrations and declarative schema management
+3. Supports versioned migrations

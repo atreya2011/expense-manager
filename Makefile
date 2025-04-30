@@ -41,8 +41,12 @@ run: build ## Build and run the server
 	@echo "Running server..."
 	./bin/expense-manager serve
 
-seed: build ## Seed the database with mock data
-	@echo "Seeding database with mock data..."
+dev: ## Build and run the server in development mode
+	@echo "Running server in development mode..."
+	air
+
+seed: build ## Seed the database with master data
+	@echo "Seeding database with master data..."
 	./bin/expense-manager seed
 
 clean: ## Clean generated files and build artifacts

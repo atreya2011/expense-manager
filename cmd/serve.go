@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -51,15 +50,9 @@ func runServeCmd(cmd *cobra.Command, args []string) error {
 
 	// Initialize database connection
 	logger.Info("Connecting to database...", "path", cfg.Database.Path)
-	db, err := sql.Open("sqlite3", cfg.Database.Path)
+	db, err := repo.OpenDB(cfg.Database.Path)
 	if err != nil {
 		logger.Error("Failed to connect to database", "error", err)
-		return err
-	}
-
-	// Test database connection
-	if err := db.Ping(); err != nil {
-		logger.Error("Failed to ping database", "error", err)
 		return err
 	}
 	logger.Info("Database connection established")
