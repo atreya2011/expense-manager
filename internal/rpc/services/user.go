@@ -43,7 +43,12 @@ func (s *UserService) CreateUser(ctx context.Context, req *connect.Request[expen
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}
-	defer tx.Rollback() // Rollback if any error occurs
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			// Cannot return error from defer, just log it
+			fmt.Printf("Error rolling back transaction: %v\n", err)
+		}
+	}() // Rollback if any error occurs
 
 	// Create user in database within the transaction
 	user, err := s.repo.CreateUser(ctx, tx, db.CreateUserParams{
@@ -154,7 +159,12 @@ func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expen
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}
-	defer tx.Rollback() // Rollback if any error occurs
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			// Cannot return error from defer, just log it
+			fmt.Printf("Error rolling back transaction: %v\n", err)
+		}
+	}() // Rollback if any error occurs
 
 	// Check if user exists within the transaction
 	_, err = s.repo.GetUser(ctx, tx, req.Msg.Id)
@@ -201,7 +211,12 @@ func (s *UserService) DeleteUser(ctx context.Context, req *connect.Request[expen
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}
-	defer tx.Rollback() // Rollback if any error occurs
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			// Cannot return error from defer, just log it
+			fmt.Printf("Error rolling back transaction: %v\n", err)
+		}
+	}() // Rollback if any error occurs
 
 	// Check if user exists within the transaction
 	_, err = s.repo.GetUser(ctx, tx, req.Msg.Id)

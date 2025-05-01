@@ -43,7 +43,12 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *connect.R
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}
-	defer tx.Rollback() // Rollback if any error occurs
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			// Cannot return error from defer, just log it
+			fmt.Printf("Error rolling back transaction: %v\n", err)
+		}
+	}() // Rollback if any error occurs
 
 	// Create instrument in database within the transaction
 	instrument, err := s.repo.CreateInstrument(ctx, tx, req.Msg.Name)
@@ -148,7 +153,12 @@ func (s *InstrumentService) UpdateInstrument(ctx context.Context, req *connect.R
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}
-	defer tx.Rollback() // Rollback if any error occurs
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			// Cannot return error from defer, just log it
+			fmt.Printf("Error rolling back transaction: %v\n", err)
+		}
+	}() // Rollback if any error occurs
 
 	// Check if instrument exists within the transaction
 	_, err = s.repo.GetInstrument(ctx, tx, req.Msg.Id)
@@ -191,7 +201,12 @@ func (s *InstrumentService) DeleteInstrument(ctx context.Context, req *connect.R
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}
-	defer tx.Rollback() // Rollback if any error occurs
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			// Cannot return error from defer, just log it
+			fmt.Printf("Error rolling back transaction: %v\n", err)
+		}
+	}() // Rollback if any error occurs
 
 	// Check if instrument exists within the transaction
 	_, err = s.repo.GetInstrument(ctx, tx, req.Msg.Id)
