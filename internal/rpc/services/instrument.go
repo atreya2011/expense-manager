@@ -38,13 +38,25 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *connect.R
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: name is required", errors.ErrInvalidInput))
 	}
 
-	// Create instrument in database
-	instrument, err := s.repo.CreateInstrument(ctx, req.Msg.Name)
+	// Begin transaction
+	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
+	}
+	defer tx.Rollback() // Rollback if any error occurs
+
+	// Create instrument in database within the transaction
+	instrument, err := s.repo.CreateInstrument(ctx, tx, req.Msg.Name)
 	if err != nil {
 		if stderrors.Is(err, errors.ErrDuplicate) {
-			return nil, connect.NewError(connect.CodeAlreadyExists, fmt.Errorf("instrument with name '%s' already exists", req.Msg.Name))
+			return nil, connect.NewError(connect.CodeAlreadyExists, fmt.Errorf("%w: instrument with name %s already exists", errors.ErrDuplicate, req.Msg.Name))
 		}
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to commit transaction: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response
@@ -53,15 +65,15 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *connect.R
 	}), nil
 }
 
-// GetInstrument retrieves an instrument by ID
+// GetInstrument retrieves a instrument by ID
 func (s *InstrumentService) GetInstrument(ctx context.Context, req *connect.Request[expensesv1.GetInstrumentRequest]) (*connect.Response[expensesv1.GetInstrumentResponse], error) {
 	// Validate input
 	if req.Msg.Id == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", errors.ErrInvalidInput))
 	}
 
-	// Get instrument from database
-	instrument, err := s.repo.GetInstrument(ctx, req.Msg.Id)
+	// Get instrument from database (read operations can use the main DB connection)
+	instrument, err := s.repo.GetInstrument(ctx, s.repo.GetDB(), req.Msg.Id)
 	if err != nil {
 		if stderrors.Is(err, errors.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: instrument with id %s not found", errors.ErrNotFound, req.Msg.Id))
@@ -78,11 +90,11 @@ func (s *InstrumentService) GetInstrument(ctx context.Context, req *connect.Requ
 // ListInstruments retrieves a paginated list of instruments
 func (s *InstrumentService) ListInstruments(ctx context.Context, req *connect.Request[expensesv1.ListInstrumentsRequest]) (*connect.Response[expensesv1.ListInstrumentsResponse], error) {
 	// Parse pagination parameters
-	limit := int32(50) // default limit
-	offset := int32(0) // default offset
+	limit := int64(50) // default limit
+	offset := int64(0) // default offset
 	if req.Msg.Pagination != nil {
 		if req.Msg.Pagination.PageSize > 0 {
-			limit = req.Msg.Pagination.PageSize
+			limit = int64(req.Msg.Pagination.PageSize)
 		}
 		// Extract offset from page token if provided
 		if req.Msg.Pagination.PageToken != "" {
@@ -94,8 +106,8 @@ func (s *InstrumentService) ListInstruments(ctx context.Context, req *connect.Re
 		}
 	}
 
-	// Get instruments from database
-	instruments, err := s.repo.ListInstruments(ctx, int64(limit), int64(offset))
+	// Get instruments from database (read operations can use the main DB connection)
+	instruments, err := s.repo.ListInstruments(ctx, s.repo.GetDB(), limit, offset)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
@@ -131,8 +143,15 @@ func (s *InstrumentService) UpdateInstrument(ctx context.Context, req *connect.R
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: name is required", errors.ErrInvalidInput))
 	}
 
-	// Check if instrument exists
-	_, err := s.repo.GetInstrument(ctx, req.Msg.Id)
+	// Begin transaction
+	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
+	}
+	defer tx.Rollback() // Rollback if any error occurs
+
+	// Check if instrument exists within the transaction
+	_, err = s.repo.GetInstrument(ctx, tx, req.Msg.Id)
 	if err != nil {
 		if stderrors.Is(err, errors.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: instrument with id %s not found", errors.ErrNotFound, req.Msg.Id))
@@ -140,13 +159,18 @@ func (s *InstrumentService) UpdateInstrument(ctx context.Context, req *connect.R
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
-	// Update instrument in database
-	instrument, err := s.repo.UpdateInstrument(ctx, req.Msg.Id, req.Msg.Name)
+	// Update instrument in database within the transaction
+	instrument, err := s.repo.UpdateInstrument(ctx, tx, req.Msg.Id, req.Msg.Name)
 	if err != nil {
 		if stderrors.Is(err, errors.ErrDuplicate) {
-			return nil, connect.NewError(connect.CodeAlreadyExists, fmt.Errorf("instrument with name '%s' already exists", req.Msg.Name))
+			return nil, connect.NewError(connect.CodeAlreadyExists, fmt.Errorf("%w: instrument with name %s already exists", errors.ErrDuplicate, req.Msg.Name))
 		}
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to commit transaction: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response
@@ -162,8 +186,15 @@ func (s *InstrumentService) DeleteInstrument(ctx context.Context, req *connect.R
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", errors.ErrInvalidInput))
 	}
 
-	// Check if instrument exists
-	_, err := s.repo.GetInstrument(ctx, req.Msg.Id)
+	// Begin transaction
+	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
+	}
+	defer tx.Rollback() // Rollback if any error occurs
+
+	// Check if instrument exists within the transaction
+	_, err = s.repo.GetInstrument(ctx, tx, req.Msg.Id)
 	if err != nil {
 		if stderrors.Is(err, errors.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: instrument with id %s not found", errors.ErrNotFound, req.Msg.Id))
@@ -171,10 +202,15 @@ func (s *InstrumentService) DeleteInstrument(ctx context.Context, req *connect.R
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
-	// Delete instrument from database
-	err = s.repo.DeleteInstrument(ctx, req.Msg.Id)
+	// Delete instrument from database within the transaction
+	err = s.repo.DeleteInstrument(ctx, tx, req.Msg.Id)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to commit transaction: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response

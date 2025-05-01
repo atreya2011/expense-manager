@@ -11,28 +11,35 @@ import (
 
 // UserRepo provides direct access to user-related database operations
 type UserRepo struct {
-	q *db.Queries
+	db *sql.DB // Store the underlying DB pool
 }
 
 // NewUserRepo creates a new UserRepo
 func NewUserRepo(dbConn *sql.DB) *UserRepo {
 	return &UserRepo{
-		q: db.New(dbConn),
+		db: dbConn,
 	}
 }
 
-// CreateUser creates a new user
-func (r *UserRepo) CreateUser(ctx context.Context, arg db.CreateUserParams) (db.User, error) {
-	user, err := r.q.CreateUser(ctx, arg)
+// GetDB returns the underlying database connection pool
+func (r *UserRepo) GetDB() *sql.DB {
+	return r.db
+}
+
+// CreateUser creates a new user within the provided DBTX
+func (r *UserRepo) CreateUser(ctx context.Context, dbtx db.DBTX, arg db.CreateUserParams) (db.User, error) {
+	queries := db.New(dbtx)
+	user, err := queries.CreateUser(ctx, arg)
 	if err != nil {
 		return db.User{}, fmt.Errorf("failed to create user: %w", err)
 	}
 	return user, nil
 }
 
-// GetUser retrieves a user by ID
-func (r *UserRepo) GetUser(ctx context.Context, id string) (db.User, error) {
-	user, err := r.q.GetUser(ctx, id)
+// GetUser retrieves a user by ID within the provided DBTX
+func (r *UserRepo) GetUser(ctx context.Context, dbtx db.DBTX, id string) (db.User, error) {
+	queries := db.New(dbtx)
+	user, err := queries.GetUser(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return db.User{}, fmt.Errorf("user not found: %w", errors.ErrNotFound)
@@ -42,18 +49,20 @@ func (r *UserRepo) GetUser(ctx context.Context, id string) (db.User, error) {
 	return user, nil
 }
 
-// ListUsers retrieves a paginated list of users
-func (r *UserRepo) ListUsers(ctx context.Context, arg db.ListUsersParams) ([]db.User, error) {
-	users, err := r.q.ListUsers(ctx, arg)
+// ListUsers retrieves a paginated list of users within the provided DBTX
+func (r *UserRepo) ListUsers(ctx context.Context, dbtx db.DBTX, arg db.ListUsersParams) ([]db.User, error) {
+	queries := db.New(dbtx)
+	users, err := queries.ListUsers(ctx, arg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list users: %w", err)
 	}
 	return users, nil
 }
 
-// UpdateUser updates a user
-func (r *UserRepo) UpdateUser(ctx context.Context, arg db.UpdateUserParams) (db.User, error) {
-	user, err := r.q.UpdateUser(ctx, arg)
+// UpdateUser updates a user within the provided DBTX
+func (r *UserRepo) UpdateUser(ctx context.Context, dbtx db.DBTX, arg db.UpdateUserParams) (db.User, error) {
+	queries := db.New(dbtx)
+	user, err := queries.UpdateUser(ctx, arg)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return db.User{}, fmt.Errorf("user not found: %w", errors.ErrNotFound)
@@ -63,9 +72,10 @@ func (r *UserRepo) UpdateUser(ctx context.Context, arg db.UpdateUserParams) (db.
 	return user, nil
 }
 
-// DeleteUser deletes a user by ID
-func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
-	err := r.q.DeleteUser(ctx, id)
+// DeleteUser deletes a user by ID within the provided DBTX
+func (r *UserRepo) DeleteUser(ctx context.Context, dbtx db.DBTX, id string) error {
+	queries := db.New(dbtx)
+	err := queries.DeleteUser(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fmt.Errorf("user not found: %w", errors.ErrNotFound)

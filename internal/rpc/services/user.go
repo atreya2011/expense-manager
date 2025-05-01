@@ -38,13 +38,28 @@ func (s *UserService) CreateUser(ctx context.Context, req *connect.Request[expen
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: name and email are required", errors.ErrInvalidInput))
 	}
 
-	// Create user in database
-	user, err := s.repo.CreateUser(ctx, db.CreateUserParams{
+	// Begin transaction
+	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
+	}
+	defer tx.Rollback() // Rollback if any error occurs
+
+	// Create user in database within the transaction
+	user, err := s.repo.CreateUser(ctx, tx, db.CreateUserParams{
 		Name:  req.Msg.Name,
 		Email: req.Msg.Email,
 	})
 	if err != nil {
+		if stderrors.Is(err, errors.ErrDuplicate) {
+			return nil, connect.NewError(connect.CodeAlreadyExists, fmt.Errorf("%w: user with email %s already exists", errors.ErrDuplicate, req.Msg.Email))
+		}
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to commit transaction: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response
@@ -60,8 +75,8 @@ func (s *UserService) GetUser(ctx context.Context, req *connect.Request[expenses
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", errors.ErrInvalidInput))
 	}
 
-	// Get user from database
-	user, err := s.repo.GetUser(ctx, req.Msg.Id)
+	// Get user from database (read operations can use the main DB connection)
+	user, err := s.repo.GetUser(ctx, s.repo.GetDB(), req.Msg.Id)
 	if err != nil {
 		if stderrors.Is(err, errors.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", errors.ErrNotFound, req.Msg.Id))
@@ -94,8 +109,8 @@ func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[expens
 		}
 	}
 
-	// Get users from database
-	users, err := s.repo.ListUsers(ctx, db.ListUsersParams{
+	// Get users from database (read operations can use the main DB connection)
+	users, err := s.repo.ListUsers(ctx, s.repo.GetDB(), db.ListUsersParams{
 		Limit:  limit,
 		Offset: offset,
 	})
@@ -134,8 +149,15 @@ func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expen
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: name and email are required", errors.ErrInvalidInput))
 	}
 
-	// Check if user exists
-	_, err := s.repo.GetUser(ctx, req.Msg.Id)
+	// Begin transaction
+	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
+	}
+	defer tx.Rollback() // Rollback if any error occurs
+
+	// Check if user exists within the transaction
+	_, err = s.repo.GetUser(ctx, tx, req.Msg.Id)
 	if err != nil {
 		if stderrors.Is(err, errors.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", errors.ErrNotFound, req.Msg.Id))
@@ -143,14 +165,22 @@ func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expen
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
-	// Update user in database
-	user, err := s.repo.UpdateUser(ctx, db.UpdateUserParams{
+	// Update user in database within the transaction
+	user, err := s.repo.UpdateUser(ctx, tx, db.UpdateUserParams{
 		ID:    req.Msg.Id,
 		Name:  req.Msg.Name,
 		Email: req.Msg.Email,
 	})
 	if err != nil {
+		if stderrors.Is(err, errors.ErrDuplicate) {
+			return nil, connect.NewError(connect.CodeAlreadyExists, fmt.Errorf("%w: user with email %s already exists", errors.ErrDuplicate, req.Msg.Email))
+		}
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to commit transaction: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response
@@ -166,8 +196,15 @@ func (s *UserService) DeleteUser(ctx context.Context, req *connect.Request[expen
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("%w: id is required", errors.ErrInvalidInput))
 	}
 
-	// Check if user exists
-	_, err := s.repo.GetUser(ctx, req.Msg.Id)
+	// Begin transaction
+	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
+	}
+	defer tx.Rollback() // Rollback if any error occurs
+
+	// Check if user exists within the transaction
+	_, err = s.repo.GetUser(ctx, tx, req.Msg.Id)
 	if err != nil {
 		if stderrors.Is(err, errors.ErrNotFound) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("%w: user with id %s not found", errors.ErrNotFound, req.Msg.Id))
@@ -175,10 +212,15 @@ func (s *UserService) DeleteUser(ctx context.Context, req *connect.Request[expen
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
 	}
 
-	// Delete user from database
-	err = s.repo.DeleteUser(ctx, req.Msg.Id)
+	// Delete user from database within the transaction
+	err = s.repo.DeleteUser(ctx, tx, req.Msg.Id)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: %v", errors.ErrInternal, err))
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to commit transaction: %v", errors.ErrInternal, err))
 	}
 
 	// Prepare response

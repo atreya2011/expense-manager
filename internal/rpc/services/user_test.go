@@ -108,8 +108,8 @@ func TestGetUser(t *testing.T) {
 	// Create a new UserService with the test repositories
 	service := NewUserService(userRepo, testClock)
 
-	// Create a test user
-	testUser := createTestUser(t, "Get Test User", "get@example.com")
+	// Create a test user (using the main DB connection for setup)
+	testUser := createTestUser(t, testDB, "Get Test User", "get@example.com")
 
 	// Define test cases
 	tests := []struct {
@@ -145,6 +145,7 @@ func TestGetUser(t *testing.T) {
 				Id: tc.userID,
 			})
 
+			// Read operations can use the main DB connection
 			resp, err := service.GetUser(ctx, req)
 
 			// Check errors
@@ -180,10 +181,10 @@ func TestListUsers(t *testing.T) {
 	// Create a new UserService with the test repositories
 	service := NewUserService(userRepo, testClock)
 
-	// Create test users (underscore prefix to indicate intentionally unused return values)
-	_ = createTestUser(t, "List User 1", "list1@example.com")
-	_ = createTestUser(t, "List User 2", "list2@example.com")
-	_ = createTestUser(t, "List User 3", "list3@example.com")
+	// Create test users (using the main DB connection for setup)
+	_ = createTestUser(t, testDB, "List User 1", "list1@example.com")
+	_ = createTestUser(t, testDB, "List User 2", "list2@example.com")
+	_ = createTestUser(t, testDB, "List User 3", "list3@example.com")
 
 	// Define test cases
 	tests := []struct {
@@ -235,6 +236,7 @@ func TestListUsers(t *testing.T) {
 				Pagination: pagination,
 			})
 
+			// Read operations can use the main DB connection
 			resp, err := service.ListUsers(ctx, req)
 
 			// Check errors
@@ -269,9 +271,9 @@ func TestUpdateUser(t *testing.T) {
 	// Create a new UserService with the test repositories
 	service := NewUserService(userRepo, testClock)
 
-	// Create test users
-	testUser := createTestUser(t, "Original Name", "original@example.com")
-	otherUser := createTestUser(t, "Other User", "other@example.com")
+	// Create test users (using the main DB connection for setup)
+	testUser := createTestUser(t, testDB, "Original Name", "original@example.com")
+	otherUser := createTestUser(t, testDB, "Other User", "other@example.com")
 
 	// Define test cases
 	tests := []struct {
@@ -381,8 +383,8 @@ func TestDeleteUser(t *testing.T) {
 	// Create a new UserService with the test repositories
 	service := NewUserService(userRepo, testClock)
 
-	// Create a test user
-	testUser := createTestUser(t, "Delete Test User", "delete@example.com")
+	// Create a test user (using the main DB connection for setup)
+	testUser := createTestUser(t, testDB, "Delete Test User", "delete@example.com")
 
 	// Define test cases
 	tests := []struct {
@@ -419,7 +421,7 @@ func TestDeleteUser(t *testing.T) {
 			if tc.name != "Valid user deletion" {
 				// Only reset for non-deletion cases
 				resetTestDB(t)
-				createTestUser(t, testUser.Name, testUser.Email)
+				createTestUser(t, testDB, testUser.Name, testUser.Email)
 			}
 
 			req := connect.NewRequest(&expensesv1.DeleteUserRequest{

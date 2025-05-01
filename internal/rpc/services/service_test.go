@@ -127,8 +127,8 @@ func resetTestDB(t *testing.T) {
 	}
 }
 
-// createTestUser inserts a test user into the database
-func createTestUser(t *testing.T, name, email string) db.User {
+// createTestUser inserts a test user into the database using the provided DBTX
+func createTestUser(t *testing.T, dbtx db.DBTX, name, email string) db.User {
 	t.Helper()
 
 	var user db.User
@@ -141,7 +141,7 @@ func createTestUser(t *testing.T, name, email string) db.User {
 
 	// Use the repository to create the user
 	var err error
-	user, err = userRepo.CreateUser(ctx, params)
+	user, err = userRepo.CreateUser(ctx, dbtx, params)
 	if err != nil {
 		t.Fatalf("Failed to create test user: %v", err)
 	}
@@ -149,8 +149,8 @@ func createTestUser(t *testing.T, name, email string) db.User {
 	return user
 }
 
-// createTestInstrument inserts a test instrument into the database
-func createTestInstrument(t *testing.T, name string) db.Instrument {
+// createTestInstrument inserts a test instrument into the database using the provided DBTX
+func createTestInstrument(t *testing.T, dbtx db.DBTX, name string) db.Instrument {
 	t.Helper()
 
 	var instrument db.Instrument
@@ -159,7 +159,7 @@ func createTestInstrument(t *testing.T, name string) db.Instrument {
 
 	// Use the repository to create the instrument
 	var err error
-	instrument, err = instrumentRepo.CreateInstrument(ctx, name)
+	instrument, err = instrumentRepo.CreateInstrument(ctx, dbtx, name)
 	if err != nil {
 		t.Fatalf("Failed to create test instrument: %v", err)
 	}
