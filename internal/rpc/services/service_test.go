@@ -3,6 +3,8 @@ package services
 import (
 	"context"
 	"flag"
+	"io"
+	"log/slog"
 	"os"
 	"testing"
 	"time"
@@ -28,6 +30,9 @@ var (
 
 	// Test clock for predictable timestamps
 	testClock clock.Clock
+	
+	// Test logger for predictable logging
+	testLogger *slog.Logger
 )
 
 // TestMain handles setup and teardown for all tests
@@ -69,6 +74,9 @@ func setupTestEnvironment() error {
 
 	// Initialize test clock
 	testClock = clock.NewMockClock(time.Date(2025, 4, 26, 12, 0, 0, 0, time.UTC))
+	
+	// Initialize test logger that discards output
+	testLogger = slog.New(slog.NewTextHandler(io.Discard, nil))
 
 	return nil
 }

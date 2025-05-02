@@ -14,7 +14,7 @@ func TestCreateUser(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new UserService with the test repositories
-	service := NewUserService(userRepo, testClock)
+	service := NewUserService(userRepo, testClock, testLogger)
 
 	// Define test cases
 	tests := []struct {
@@ -106,7 +106,7 @@ func TestGetUser(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new UserService with the test repositories
-	service := NewUserService(userRepo, testClock)
+	service := NewUserService(userRepo, testClock, testLogger)
 
 	// Create a test user (using the main DB connection for setup)
 	testUser := createTestUser(t, testDB, "Get Test User", "get@example.com")
@@ -179,7 +179,7 @@ func TestListUsers(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new UserService with the test repositories
-	service := NewUserService(userRepo, testClock)
+	service := NewUserService(userRepo, testClock, testLogger)
 
 	// Create test users (using the main DB connection for setup)
 	_ = createTestUser(t, testDB, "List User 1", "list1@example.com")
@@ -269,7 +269,7 @@ func TestUpdateUser(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new UserService with the test repositories
-	service := NewUserService(userRepo, testClock)
+	service := NewUserService(userRepo, testClock, testLogger)
 
 	// Create test users (using the main DB connection for setup)
 	testUser := createTestUser(t, testDB, "Original Name", "original@example.com")
@@ -381,7 +381,7 @@ func TestDeleteUser(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new UserService with the test repositories
-	service := NewUserService(userRepo, testClock)
+	service := NewUserService(userRepo, testClock, testLogger)
 
 	// Create a test user (using the main DB connection for setup)
 	testUser := createTestUser(t, testDB, "Delete Test User", "delete@example.com")

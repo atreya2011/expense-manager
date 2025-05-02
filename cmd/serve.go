@@ -81,8 +81,8 @@ func runServeCmd(cmd *cobra.Command, args []string) error {
 	logger.Info("Clock initialized")
 
 	// Initialize Connect RPC services
-	userService := services.NewUserService(userRepo, clk)
-	instrumentService := services.NewInstrumentService(instrumentRepo, clk)
+	userService := services.NewUserService(userRepo, clk, logger)
+	instrumentService := services.NewInstrumentService(instrumentRepo, clk, logger)
 	logger.Info("Services initialized")
 
 	// Create router

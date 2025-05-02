@@ -14,7 +14,7 @@ func TestCreateInstrument(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new InstrumentService with the test repositories
-	service := NewInstrumentService(instrumentRepo, testClock)
+	service := NewInstrumentService(instrumentRepo, testClock, testLogger)
 
 	// Define test cases
 	tests := []struct {
@@ -89,7 +89,7 @@ func TestGetInstrument(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new InstrumentService with the test repositories
-	service := NewInstrumentService(instrumentRepo, testClock)
+	service := NewInstrumentService(instrumentRepo, testClock, testLogger)
 
 	// Create a test instrument (using the main DB connection for setup)
 	testInstrument := createTestInstrument(t, testDB, "Bank Account")
@@ -158,7 +158,7 @@ func TestListInstruments(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new InstrumentService with the test repositories
-	service := NewInstrumentService(instrumentRepo, testClock)
+	service := NewInstrumentService(instrumentRepo, testClock, testLogger)
 
 	// Create test instruments (using the main DB connection for setup)
 	_ = createTestInstrument(t, testDB, "Cash")
@@ -248,7 +248,7 @@ func TestUpdateInstrument(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new InstrumentService with the test repositories
-	service := NewInstrumentService(instrumentRepo, testClock)
+	service := NewInstrumentService(instrumentRepo, testClock, testLogger)
 
 	// Create test instruments (using the main DB connection for setup)
 	testInstrument := createTestInstrument(t, testDB, "Original Name")
@@ -341,7 +341,7 @@ func TestDeleteInstrument(t *testing.T) {
 	resetTestDB(t)
 
 	// Create a new InstrumentService with the test repositories
-	service := NewInstrumentService(instrumentRepo, testClock)
+	service := NewInstrumentService(instrumentRepo, testClock, testLogger)
 
 	// Create a test instrument (using the main DB connection for setup)
 	testInstrument := createTestInstrument(t, testDB, "Delete Test Instrument")
