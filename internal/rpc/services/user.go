@@ -39,7 +39,7 @@ func NewUserService(repo *repo.UserRepo, clock clock.Clock, logger *slog.Logger)
 func (s *UserService) CreateUser(ctx context.Context, req *connect.Request[expensesv1.CreateUserRequest]) (*connect.Response[expensesv1.CreateUserResponse], error) {
 	// Log method entry with context
 	log.InfoContext(ctx, s.logger, "Creating user", "name", req.Msg.Name, "email", req.Msg.Email)
-	
+
 	// Validate input
 	if req.Msg.Name == "" || req.Msg.Email == "" {
 		log.ErrorContext(ctx, s.logger, "Invalid input for CreateUser", "error", "name and email are required")
@@ -81,7 +81,7 @@ func (s *UserService) CreateUser(ctx context.Context, req *connect.Request[expen
 
 	// Log success
 	log.InfoContext(ctx, s.logger, "User created successfully", "id", user.ID)
-	
+
 	// Prepare response
 	return connect.NewResponse(&expensesv1.CreateUserResponse{
 		User: toProtoUser(user),
@@ -92,7 +92,7 @@ func (s *UserService) CreateUser(ctx context.Context, req *connect.Request[expen
 func (s *UserService) GetUser(ctx context.Context, req *connect.Request[expensesv1.GetUserRequest]) (*connect.Response[expensesv1.GetUserResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Getting user", "id", req.Msg.Id)
-	
+
 	// Validate input
 	if req.Msg.Id == "" {
 		log.ErrorContext(ctx, s.logger, "Invalid input for GetUser", "error", "id is required")
@@ -111,7 +111,7 @@ func (s *UserService) GetUser(ctx context.Context, req *connect.Request[expenses
 	}
 
 	log.InfoContext(ctx, s.logger, "User retrieved successfully", "id", user.ID)
-	
+
 	// Prepare response
 	return connect.NewResponse(&expensesv1.GetUserResponse{
 		User: toProtoUser(user),
@@ -122,7 +122,7 @@ func (s *UserService) GetUser(ctx context.Context, req *connect.Request[expenses
 func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[expensesv1.ListUsersRequest]) (*connect.Response[expensesv1.ListUsersResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Listing users")
-	
+
 	// Parse pagination parameters
 	limit := int32(50) // default limit
 	offset := int32(0) // default offset
@@ -140,7 +140,7 @@ func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[expens
 			}
 		}
 	}
-	
+
 	log.InfoContext(ctx, s.logger, "Pagination parameters", "limit", limit, "offset", offset)
 
 	// Get users from database (read operations can use the main DB connection)
@@ -180,7 +180,7 @@ func (s *UserService) ListUsers(ctx context.Context, req *connect.Request[expens
 func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expensesv1.UpdateUserRequest]) (*connect.Response[expensesv1.UpdateUserResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Updating user", "id", req.Msg.Id, "name", req.Msg.Name, "email", req.Msg.Email)
-	
+
 	// Validate input
 	if req.Msg.Id == "" {
 		log.ErrorContext(ctx, s.logger, "Invalid input for UpdateUser", "error", "id is required")
@@ -238,7 +238,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expen
 
 	// Log success
 	log.InfoContext(ctx, s.logger, "User updated successfully", "id", user.ID)
-	
+
 	// Prepare response
 	return connect.NewResponse(&expensesv1.UpdateUserResponse{
 		User: toProtoUser(user),
@@ -249,7 +249,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *connect.Request[expen
 func (s *UserService) DeleteUser(ctx context.Context, req *connect.Request[expensesv1.DeleteUserRequest]) (*connect.Response[expensesv1.DeleteUserResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Deleting user", "id", req.Msg.Id)
-	
+
 	// Validate input
 	if req.Msg.Id == "" {
 		log.ErrorContext(ctx, s.logger, "Invalid input for DeleteUser", "error", "id is required")
@@ -295,7 +295,7 @@ func (s *UserService) DeleteUser(ctx context.Context, req *connect.Request[expen
 
 	// Log success
 	log.InfoContext(ctx, s.logger, "User deleted successfully", "id", req.Msg.Id)
-	
+
 	// Prepare response
 	return connect.NewResponse(&expensesv1.DeleteUserResponse{
 		Success: true,

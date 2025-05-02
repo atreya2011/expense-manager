@@ -39,7 +39,7 @@ func NewInstrumentService(repo *repo.InstrumentRepo, clock clock.Clock, logger *
 func (s *InstrumentService) CreateInstrument(ctx context.Context, req *connect.Request[expensesv1.CreateInstrumentRequest]) (*connect.Response[expensesv1.CreateInstrumentResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Creating instrument", "name", req.Msg.Name)
-	
+
 	// Validate input
 	if req.Msg.Name == "" {
 		log.ErrorContext(ctx, s.logger, "Invalid input for CreateInstrument", "error", "name is required")
@@ -78,7 +78,7 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *connect.R
 
 	// Log success
 	log.InfoContext(ctx, s.logger, "Instrument created successfully", "id", instrument.ID)
-	
+
 	// Prepare response
 	return connect.NewResponse(&expensesv1.CreateInstrumentResponse{
 		Instrument: toProtoInstrument(instrument),
@@ -89,7 +89,7 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *connect.R
 func (s *InstrumentService) GetInstrument(ctx context.Context, req *connect.Request[expensesv1.GetInstrumentRequest]) (*connect.Response[expensesv1.GetInstrumentResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Getting instrument", "id", req.Msg.Id)
-	
+
 	// Validate input
 	if req.Msg.Id == "" {
 		log.ErrorContext(ctx, s.logger, "Invalid input for GetInstrument", "error", "id is required")
@@ -108,7 +108,7 @@ func (s *InstrumentService) GetInstrument(ctx context.Context, req *connect.Requ
 	}
 
 	log.InfoContext(ctx, s.logger, "Instrument retrieved successfully", "id", instrument.ID)
-	
+
 	// Prepare response
 	return connect.NewResponse(&expensesv1.GetInstrumentResponse{
 		Instrument: toProtoInstrument(instrument),
@@ -119,7 +119,7 @@ func (s *InstrumentService) GetInstrument(ctx context.Context, req *connect.Requ
 func (s *InstrumentService) ListInstruments(ctx context.Context, req *connect.Request[expensesv1.ListInstrumentsRequest]) (*connect.Response[expensesv1.ListInstrumentsResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Listing instruments")
-	
+
 	// Parse pagination parameters
 	limit := int64(50) // default limit
 	offset := int64(0) // default offset
@@ -137,7 +137,7 @@ func (s *InstrumentService) ListInstruments(ctx context.Context, req *connect.Re
 			}
 		}
 	}
-	
+
 	log.InfoContext(ctx, s.logger, "Pagination parameters", "limit", limit, "offset", offset)
 
 	// Get instruments from database (read operations can use the main DB connection)
@@ -174,7 +174,7 @@ func (s *InstrumentService) ListInstruments(ctx context.Context, req *connect.Re
 func (s *InstrumentService) UpdateInstrument(ctx context.Context, req *connect.Request[expensesv1.UpdateInstrumentRequest]) (*connect.Response[expensesv1.UpdateInstrumentResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Updating instrument", "id", req.Msg.Id, "name", req.Msg.Name)
-	
+
 	// Validate input
 	if req.Msg.Id == "" {
 		log.ErrorContext(ctx, s.logger, "Invalid input for UpdateInstrument", "error", "id is required")
@@ -228,7 +228,7 @@ func (s *InstrumentService) UpdateInstrument(ctx context.Context, req *connect.R
 
 	// Log success
 	log.InfoContext(ctx, s.logger, "Instrument updated successfully", "id", instrument.ID)
-	
+
 	// Prepare response
 	return connect.NewResponse(&expensesv1.UpdateInstrumentResponse{
 		Instrument: toProtoInstrument(instrument),
@@ -239,7 +239,7 @@ func (s *InstrumentService) UpdateInstrument(ctx context.Context, req *connect.R
 func (s *InstrumentService) DeleteInstrument(ctx context.Context, req *connect.Request[expensesv1.DeleteInstrumentRequest]) (*connect.Response[expensesv1.DeleteInstrumentResponse], error) {
 	// Log method entry
 	log.InfoContext(ctx, s.logger, "Deleting instrument", "id", req.Msg.Id)
-	
+
 	// Validate input
 	if req.Msg.Id == "" {
 		log.ErrorContext(ctx, s.logger, "Invalid input for DeleteInstrument", "error", "id is required")
@@ -285,7 +285,7 @@ func (s *InstrumentService) DeleteInstrument(ctx context.Context, req *connect.R
 
 	// Log success
 	log.InfoContext(ctx, s.logger, "Instrument deleted successfully", "id", req.Msg.Id)
-	
+
 	// Prepare response
 	return connect.NewResponse(&expensesv1.DeleteInstrumentResponse{
 		Success: true,
