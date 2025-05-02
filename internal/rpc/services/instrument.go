@@ -39,7 +39,7 @@ func (s *InstrumentService) CreateInstrument(ctx context.Context, req *connect.R
 	}
 
 	// Begin transaction
-	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	tx, err := s.repo.GetDB().BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}
@@ -149,7 +149,7 @@ func (s *InstrumentService) UpdateInstrument(ctx context.Context, req *connect.R
 	}
 
 	// Begin transaction
-	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	tx, err := s.repo.GetDB().BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}
@@ -197,7 +197,7 @@ func (s *InstrumentService) DeleteInstrument(ctx context.Context, req *connect.R
 	}
 
 	// Begin transaction
-	tx, err := s.repo.GetDB().BeginTx(ctx, nil)
+	tx, err := s.repo.GetDB().BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("%w: failed to begin transaction: %v", errors.ErrInternal, err))
 	}

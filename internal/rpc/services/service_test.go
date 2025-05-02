@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"flag"
 	"os"
 	"testing"
@@ -11,6 +10,7 @@ import (
 	"github.com/atreya2011/expense-manager/internal/clock"
 	"github.com/atreya2011/expense-manager/internal/repo"
 	db "github.com/atreya2011/expense-manager/internal/repo/gen"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -20,7 +20,7 @@ const (
 
 var (
 	// Global test database connection
-	testDB *sql.DB
+	testDB *sqlx.DB
 
 	// Global repositories for tests
 	userRepo       *repo.UserRepo
@@ -84,7 +84,7 @@ func teardownTestEnvironment() {
 }
 
 // Create test schema
-func createTestSchema(db *sql.DB) error {
+func createTestSchema(db *sqlx.DB) error {
 	// Create users table
 	_, err := db.Exec(`
 		CREATE TABLE users (

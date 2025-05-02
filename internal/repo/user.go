@@ -7,22 +7,23 @@ import (
 
 	"github.com/atreya2011/expense-manager/internal/errors"
 	db "github.com/atreya2011/expense-manager/internal/repo/gen"
+	"github.com/jmoiron/sqlx"
 )
 
 // UserRepo provides direct access to user-related database operations
 type UserRepo struct {
-	db *sql.DB // Store the underlying DB pool
+	db *sqlx.DB // Store the underlying DB pool
 }
 
 // NewUserRepo creates a new UserRepo
-func NewUserRepo(dbConn *sql.DB) *UserRepo {
+func NewUserRepo(dbConn *sqlx.DB) *UserRepo {
 	return &UserRepo{
 		db: dbConn,
 	}
 }
 
 // GetDB returns the underlying database connection pool
-func (r *UserRepo) GetDB() *sql.DB {
+func (r *UserRepo) GetDB() *sqlx.DB {
 	return r.db
 }
 

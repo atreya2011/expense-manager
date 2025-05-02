@@ -8,22 +8,23 @@ import (
 
 	"github.com/atreya2011/expense-manager/internal/errors"
 	db "github.com/atreya2011/expense-manager/internal/repo/gen"
+	"github.com/jmoiron/sqlx"
 )
 
 // InstrumentRepo provides direct access to instrument-related database operations
 type InstrumentRepo struct {
-	db *sql.DB // Store the underlying DB pool
+	db *sqlx.DB // Store the underlying DB pool
 }
 
 // NewInstrumentRepo creates a new InstrumentRepo
-func NewInstrumentRepo(dbConn *sql.DB) *InstrumentRepo {
+func NewInstrumentRepo(dbConn *sqlx.DB) *InstrumentRepo {
 	return &InstrumentRepo{
 		db: dbConn,
 	}
 }
 
 // GetDB returns the underlying database connection pool
-func (r *InstrumentRepo) GetDB() *sql.DB {
+func (r *InstrumentRepo) GetDB() *sqlx.DB {
 	return r.db
 }
 

@@ -1,15 +1,15 @@
 package repo
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" // Import SQLite driver
 )
 
 // OpenDB creates a new database connection pool
-func OpenDB(path string) (*sql.DB, error) {
+func OpenDB(path string) (*sqlx.DB, error) {
 	connStr := path
 
 	// Add query parameters if not an in-memory database
@@ -22,7 +22,7 @@ func OpenDB(path string) (*sql.DB, error) {
 		connStr = "file::memory:?cache=shared&_busy_timeout=5000"
 	}
 
-	db, err := sql.Open("sqlite3", connStr)
+	db, err := sqlx.Open("sqlite3", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %w", err)
 	}
@@ -44,7 +44,7 @@ func OpenDB(path string) (*sql.DB, error) {
 }
 
 // CloseDB closes the database connection pool
-func CloseDB(db *sql.DB) error {
+func CloseDB(db *sqlx.DB) error {
 	if db != nil {
 		return db.Close()
 	}
