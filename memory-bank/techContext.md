@@ -13,7 +13,7 @@
 
 1. **Buf (v2 Recommended)**: Protobuf management (`buf.yaml`, `buf.gen.yaml`). Output: `internal/rpc/gen/` (Go), `frontend/gen/client` (ES).
 2. **sqlc**: Type-safe Go code generation from SQL (`sqlc.yaml`, `db/queries/`). Output: `internal/repo/gen/`.
-3. **Atlas**: Declarative database schema migration tool (`atlas.yaml`, `db/schema.sql`). Manages schema via diffing.
+3. **Atlas**: Declarative database schema migration tool. Manages schema via diffing against `db/schema.sql` using parameters in the Makefile.
 4. **Cobra**: CLI framework (`cmd/`).
 5. **Makefile**: Centralized build/dev task runner. Includes targets like `generate-all`, `migrate`, `migrate-new`, `test`, `lint`, `build`, `run`, `seed`.
 6. **golangci-lint**: **Mandatory** Go static analysis runner (`.golangci.yaml`, `make lint`).
@@ -24,10 +24,12 @@
 1. **`github.com/caarlos0/env/v11`**: Environment variable configuration loading.
 2. **`github.com/joho/godotenv`**: `.env` file loading.
 3. **`log/slog` (Go Standard Library)**: Structured logging implementation (`internal/log/logger.go`).
-4. **`github.com/mattn/go-sqlite3`**: SQLite driver.
-5. **Go Standard `testing` package**: Core testing framework.
-6. **`github.com/google/go-cmp/cmp`**: Struct comparisons in tests.
-7. **(Atlas Go Provider if needed)**
+4. **`github.com/mattn/go-sqlite3`**: SQLite driver. Note: Using `jmoiron/sqlx` for enhanced database operations over standard `database/sql`.
+5. **`github.com/jmoiron/sqlx`**: Database library providing extensions to `database/sql`.
+6. **OpenTelemetry**: For distributed tracing. Includes relevant Go libraries (e.g., `go.opentelemetry.io/otel`, `go.opentelemetry.io/otel/sdk`, exporters).
+7. **Go Standard `testing` package**: Core testing framework.
+8. **`github.com/google/go-cmp/cmp`**: Struct comparisons in tests.
+9. **(Atlas Go Provider if needed)**
 
 ## Development Setup
 

@@ -14,8 +14,19 @@ graph LR
     %% Descriptions
     B(Backend API Layer) --> B_Desc(ConnectRPC, Protobuf, Buf Gen Code);
     C[Service Layer] --> C_Desc(Business Logic, DEB Rules, Tx Mgmt);
-    D[Data Access Layer] --> D_Desc(Concrete Repo Impls using sqlc Gen Code);
-    E[Database Layer] --> E_Desc(SQLite, Atlas Schema);
+    D[Data Access Layer] --> D_Desc(Concrete Repo Impls using sqlc Gen Code, sqlx);
+    E[Database Layer] --> E_Desc(SQLite, Atlas Schema driven by db/schema.sql and Makefile parameters);
+
+    %% Add Tracing
+    subgraph Cross-Cutting Concerns
+        F[Tracing];
+    end
+    %% API Layer interacts with Tracing
+    B --> F;
+    %% Service Layer interacts with Tracing
+    C --> F;
+    %% Data Access Layer interacts with Tracing
+    D --> F;
 ```
 
 A simplified layered architecture optimized for direct interaction, TDD, and specific tooling choices:
@@ -26,7 +37,7 @@ A simplified layered architecture optimized for direct interaction, TDD, and spe
 ├──────────────────────────────────────────────────┤
 │                  Service Layer                   │ Business Logic, DEB Rules, Tx Mgmt (in RPC Services)
 ├──────────────────────────────────────────────────┤
-│              Data Access Layer                   │ Concrete Repo Impls using sqlc Gen Code
+│              Data Access Layer                   │ Concrete Repo Impls using sqlc Gen Code, sqlx
 ├──────────────────────────────────────────────────┤
 │                  Database Layer                  │ SQLite, Atlas Schema (`schema.sql` driven)
 └──────────────────────────────────────────────────┘
@@ -34,16 +45,17 @@ A simplified layered architecture optimized for direct interaction, TDD, and spe
 
 ## Key Design Patterns
 
-1. **Simplified Layered Architecture:** Direct Service-to-Repository Implementation coupling.
-2. **Concrete Repository Pattern:** Data access logic grouped in `internal/repo` using sqlc.
-3. **Service Layer:** Business logic within ConnectRPC service implementations.
-4. **Dependency Injection (Manual):** Via constructors.
-5. **Code Generation:** Buf (API), sqlc (Data Access).
-6. **Configuration Management:** Direct environment variable loading via `github.com/caarlos0/env/v11`.
-7. **Command Pattern (Cobra):** CLI structure.
-8. **Test-Driven Development (TDD):** Service-level tests (using standard `testing`/`cmp`) drive implementation.
-9. **Declarative Migrations (Atlas):** Schema state defined in `db/schema.sql`. Atlas generates versioned `UP` migration files.
-10. **Mandatory Linting (`golangci-lint`):** Enforced code quality.
+1. **OpenTelemetry Tracing:** Integrated for distributed tracing across layers.
+2. **Simplified Layered Architecture:** Direct Service-to-Repository Implementation coupling.
+3. **Concrete Repository Pattern:** Data access logic grouped in `internal/repo` using sqlc.
+4. **Service Layer:** Business logic within ConnectRPC service implementations.
+5. **Dependency Injection (Manual):** Via constructors.
+6. **Code Generation:** Buf (API), sqlc (Data Access).
+7. **Configuration Management:** Direct environment variable loading via `github.com/caarlos0/env/v11`.
+8. **Command Pattern (Cobra):** CLI structure.
+9. **Test-Driven Development (TDD):** Service-level tests (using standard `testing`/`cmp`) drive implementation.
+10. **Declarative Migrations (Atlas):** Schema state defined in `db/schema.sql`. Atlas generates versioned `UP` migration files.
+11. **Mandatory Linting (`golangci-lint`):** Enforced code quality.
 
 ## Double-Entry Bookkeeping Implementation
 

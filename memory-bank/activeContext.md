@@ -15,6 +15,8 @@ Phase 0 (Project Setup & Foundation) is **complete**. Phase 1 has begun with **U
 5. **Tooling:** `Makefile` updated for Atlas. Air configured. Linter mandatory.
 6. **Testing:** `google/go-cmp/cmp` added. Testing approach standardized.
 7. **Terminology:** "Owner" renamed to "User" across schema and planned code.
+8. **Database Interaction:** `sqlx` integrated for enhanced database operations.
+9. **Observability:** OpenTelemetry tracing setup complete.
 
 ## Next Steps
 

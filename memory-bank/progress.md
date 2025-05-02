@@ -9,7 +9,7 @@ Phase 0, establishing the project's foundation, is complete, reflecting the fina
     * Organization supports direct service-to-repo interaction.
 2. **Database Schema & Migrations (Atlas with `schema.sql`):**
     * Canonical schema defined in `db/schema.sql`. Includes `users` table (formerly owners), `account_users` join table, and other core tables (`account_types`, `instruments`, `currencies`, `institutions`, `accounts`, `categories`, `transactions`, `ledger_entries`).
-    * Atlas configured (`atlas.yaml`) for schema diffing against `db/schema.sql` to generate versioned `UP` migrations (`db/migrations/`).
+    * Atlas configured (via Makefile parameters) for schema diffing against `db/schema.sql` to generate versioned `UP` migrations (`db/migrations/`).
     * Initial schema and master data (including 'Current Year Earnings' Equity account) applied via Atlas.
 3. **API Definition & Generation:**
     * Protocol Buffer definitions structured under `api/proto/expenses/v1/`.
@@ -32,6 +32,10 @@ Phase 0, establishing the project's foundation, is complete, reflecting the fina
 7. **Testing Foundation:**
     * Standard `testing` package will be used.
     * `google/go-cmp/cmp` added as a dependency.
+8. **Database Interaction:**
+    * `sqlx` integrated for enhanced database operations.
+9. **Observability:**
+    * OpenTelemetry tracing setup complete.
 
 ## What's Left to Build (TDD Approach)
 

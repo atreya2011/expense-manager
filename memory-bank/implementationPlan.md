@@ -5,11 +5,11 @@
 **Target Project Structure:** Adheres to the established project structure, using directories like `proto/`, `cmd/`, `db/`, `internal/`, and `frontend/`.
 
 **Tools:**
-* **Backend:** Go (latest stable), Buf v2, Air (for live reload), sqlc, **Atlas** (for schema migrations), Cobra, **golangci-lint** (mandatory).
+* **Backend:** Go (latest stable), Buf v2, Air (for live reload), sqlc, **Atlas** (for schema migrations via db/schema.sql and Makefile parameters), Cobra, **golangci-lint** (mandatory), OpenTelemetry (for tracing).
 * **Frontend:** Vite (build tool), Bun (package manager), ESLint, Prettier (linting/formatting).
 
 **Libraries:**
-* **Backend:** Ensure usage of the latest stable versions: connectrpc.com/connect, google.golang.org/protobuf, github.com/mattn/go-sqlite3, **ariga.io/atlas-go-sdk** (if needed for programmatic Atlas interaction), github.com/sqlc-dev/sqlc, github.com/spf13/cobra, **github.com/caarlos0/env/v11** (for config), github.com/joho/godotenv, **log/slog** (standard library logger), **github.com/google/go-cmp/cmp** (for testing).
+* **Backend:** Ensure usage of the latest stable versions: connectrpc.com/connect, google.golang.org/protobuf, github.com/mattn/go-sqlite3, **github.com/jmoiron/sqlx**, OpenTelemetry libraries (e.g., `go.opentelemetry.io/otel`, `go.opentelemetry.io/otel/sdk`, exporters), **ariga.io/atlas-go-sdk** (if needed for programmatic Atlas interaction), github.com/sqlc-dev/sqlc, github.com/spf13/cobra, **github.com/caarlos0/env/v11** (for config), github.com/joho/godotenv, **log/slog** (standard library logger), **github.com/google/go-cmp/cmp** (for testing).
 * **Frontend:** React, React DOM, TanStack Router, TanStack Query, @tanstack/react-query, @connectrpc/connect, @connectrpc/connect-web, @bufbuild/protobuf, Tailwind CSS.
 
 **Methodology:**
