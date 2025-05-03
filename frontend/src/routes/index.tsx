@@ -1,3 +1,4 @@
+import { Link } from '@/components/ui/link'
 import { createFileRoute } from '@tanstack/react-router'
 import logo from '../logo.svg'
 
@@ -33,6 +34,9 @@ function App() {
         >
           Learn TanStack
         </a>
+        <Link variant="default" href="/">
+          Link
+        </Link>
       </header>
     </div>
   )
