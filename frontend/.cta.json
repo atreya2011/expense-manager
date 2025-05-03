@@ -2,7 +2,7 @@
   "framework": "react",
   "projectName": "frontend",
   "typescript": true,
-  "tailwind": false,
+  "tailwind": true,
   "packageManager": "bun",
   "toolchain": "none",
   "mode": "file-router",
