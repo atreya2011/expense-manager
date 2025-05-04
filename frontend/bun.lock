@@ -4,17 +4,19 @@
     "": {
       "name": "frontend",
       "dependencies": {
-        "@bufbuild/protobuf": "^2.2.5",
-        "@connectrpc/connect-query": "^2.0.1",
-        "@connectrpc/connect-web": "^2.0.2",
+        "@bufbuild/protobuf": "2.2.5",
+        "@connectrpc/connect": "^2.0.2",
+        "@connectrpc/connect-query": "2.0.1",
+        "@connectrpc/connect-web": "2.0.2",
         "@tailwindcss/vite": "4.1.5",
-        "@tanstack/react-query": "^5.75.1",
+        "@tanstack/react-query": "5.75.1",
         "@tanstack/react-router": "1.119.0",
         "@tanstack/react-router-devtools": "1.119.1",
         "@tanstack/router-plugin": "1.119.0",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
         "lucide-react": "0.507.0",
+        "npm-check-updates": "18.0.1",
         "react": "19.1.0",
         "react-aria-components": "1.8.0",
         "react-dom": "19.1.0",
@@ -723,6 +725,8 @@
     "node-releases": ["node-releases@2.0.19", "", {}, "sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw=="],
 
     "normalize-path": ["normalize-path@3.0.0", "", {}, "sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA=="],
+
+    "npm-check-updates": ["npm-check-updates@18.0.1", "", { "bin": { "npm-check-updates": "build/cli.js", "ncu": "build/cli.js" } }, "sha512-MO7mLp/8nm6kZNLLyPgz4gHmr9tLoU+pWPLdXuGAx+oZydBHkHWN0ibTonsrfwC2WEQNIQxuZagYwB67JQpAuw=="],
 
     "nwsapi": ["nwsapi@2.2.20", "", {}, "sha512-/ieB+mDe4MrrKMT8z+mQL8klXydZWGR5Dowt4RAGKbJ3kIGEx3X4ljUo+6V73IXtUPWgfOlU5B9MlGxFO5T+cA=="],
 
