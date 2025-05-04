@@ -1,9 +1,9 @@
+import { TransportProvider } from "@connectrpc/connect-query"
+import { createConnectTransport } from "@connectrpc/connect-web"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { createConnectTransport } from "@connectrpc/connect-web"
-import { TransportProvider } from "@connectrpc/connect-query"
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"
@@ -39,11 +39,11 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <TransportProvider transport={transport}>
+      <TransportProvider transport={transport}>
+        <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
-        </TransportProvider>
-      </QueryClientProvider>
+        </QueryClientProvider>
+      </TransportProvider>
     </StrictMode>
   )
 }

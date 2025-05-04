@@ -30,4 +30,3 @@ const Link = ({ className, variant, size, ...props }: LinkProps) => {
 
 export { Link }
 export type { LinkProps }
-

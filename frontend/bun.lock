@@ -5,7 +5,6 @@
       "name": "frontend",
       "dependencies": {
         "@bufbuild/protobuf": "2.2.5",
-        "@connectrpc/connect": "^2.0.2",
         "@connectrpc/connect-query": "2.0.1",
         "@connectrpc/connect-web": "2.0.2",
         "@tailwindcss/vite": "4.1.5",
