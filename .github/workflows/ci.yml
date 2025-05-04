@@ -14,10 +14,15 @@ jobs:
       - name: Setup Repository
         uses: actions/checkout@v4
 
-      - name: Set up Go
+      - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.24'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Configure git for private modules
         run: git config --global url."https://${{ github.token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
@@ -26,7 +31,7 @@ jobs:
         run: make setup-tools
 
       - name: Generate code
-        run: make generate-all
+        run: cd frontend && bun install && cd .. && make generate-all
 
       - name: Run migrations
         run: make migrate
