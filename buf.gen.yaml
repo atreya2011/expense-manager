@@ -8,7 +8,7 @@ plugins:
   - remote: buf.build/connectrpc/go
     out: internal/rpc/gen
     opt: paths=source_relative
-  - remote: buf.build/bufbuild/es
+  - remote: buf.build/bufbuild/connect-query
     out: frontend/gen/client
 inputs:
   - directory: proto

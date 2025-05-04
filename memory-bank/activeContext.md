@@ -2,9 +2,9 @@
 
 ## Current Work Focus
 
-Phase 0 (Project Setup & Foundation) is **complete**. Phase 1 has begun with **Users Service implementation** now also **complete**. The focus is continuing with **Phase 1: Master Data Services**.
+Phase 0 (Project Setup & Foundation) is **complete**. Phase 1 has begun with **Users Service implementation** now also **complete**. The focus is now on **Phase F0: Frontend Setup & Tooling Integration**.
 
-**Current Task:** Continue with **Phase 1: Master Data Services** by implementing the **Instruments Service**. This involves the initial steps of defining the Protobuf messages/service, creating SQL queries, generating code, and *then* proceeding with the TDD cycle (writing tests, implementing service/repo logic).
+**Current Task:** Complete **Phase F0: Frontend Setup & Tooling Integration** by installing the remaining frontend dependencies and verifying the setup.
 
 ## Recent Changes (Outcomes of Phase 0)
 
