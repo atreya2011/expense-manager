@@ -12,7 +12,11 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^2.2.5",
+    "@connectrpc/connect-query": "^2.0.1",
+    "@connectrpc/connect-web": "^2.0.2",
     "@tailwindcss/vite": "4.1.5",
+    "@tanstack/react-query": "^5.75.1",
     "@tanstack/react-router": "1.119.0",
     "@tanstack/react-router-devtools": "1.119.1",
     "@tanstack/router-plugin": "1.119.0",

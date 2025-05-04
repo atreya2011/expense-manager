@@ -92,11 +92,11 @@ Development proceeds phase by phase, alternating between backend and frontend im
 
 ### Phase F0: Frontend Setup & Tooling Integration
 
-* **Goal:** Configure the frontend environment, install necessary dependencies, set up Tailwind CSS, and integrate the generated Connect-ES client SDK.
-* **Status:** **Planning Complete.**
-* **Tasks:**
+*   **Goal:** Configure the frontend environment, install necessary dependencies, set up Tailwind CSS, and integrate the generated Connect-ES client SDK.
+*   **Status:** **Partially Complete.**
+*   **Tasks:**
     1. Verify existing frontend scaffolding (`frontend/`).
-    2. Install frontend dependencies (TanStack Router, TanStack Query, Tailwind CSS, Connect-ES client libraries) using Bun.
+    2. Install frontend dependencies (TanStack Router, TanStack Query, Tailwind CSS, Connect-ES client libraries) using Bun. **(Missing TanStack Query and Connect-ES dependencies)**
     3. Configure Tailwind CSS (`tailwind.config.js`, integrate into CSS).
     4. Ensure the Connect-ES client SDK is being generated correctly by `make generate-all` into `frontend/gen/client`.
     5. Set up a basic API client instance using the generated SDK.
