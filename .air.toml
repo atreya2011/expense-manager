@@ -14,6 +14,7 @@ exclude_dir = [
 exclude_file = []
 include_ext = ["go", "proto", "sql", "yaml", "env"]
 log = "air.log"
+pre_cmd = ["go mod tidy", "make generate-all", "rm -rf ./db/expenses.db", "make migrate", "make seed"]
 stop_on_error = true
 
 [log]

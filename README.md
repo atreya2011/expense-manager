@@ -13,6 +13,9 @@ A double-entry bookkeeping expense management system built with Go, ConnectRPC, 
 
 ## Development
 
+`make dev` will reset the database, run migrations, and start the server with live reload.
+(or) you can run the following commands manually:
+
 1. Install dependencies:
 
 ```bash
@@ -22,7 +25,7 @@ go mod tidy
 2. Generate code:
 
 ```bash
-make generate
+make generate-all
 ```
 
 3. Run migrations:
@@ -31,16 +34,16 @@ make generate
 make migrate
 ```
 
-4. Run the server:
-
-```bash
-make dev
-```
-
-5. Seed Master Data:
+4. Seed Master Data:
 
 ```bash
 make seed
+```
+
+5. Run the server:
+
+```bash
+make run
 ```
 
 ## Project Structure
